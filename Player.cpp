@@ -20,16 +20,17 @@ sf::Vector2f Player::getCoords()
 
 void Player::Update(float time)
 {
+	control();
 	float lenght = sqrt(cos(m_angle * DEGTORAD) * cos(m_angle * DEGTORAD) + sin(m_angle * DEGTORAD) * sin(m_angle * DEGTORAD));
 	if (m_move) {
-		m_coords += m_speed * time * sf::Vector2f(cos(m_angle * DEGTORAD) / lenght, sin(m_angle * DEGTORAD) / lenght) * 0.01f;
+		m_coords += m_speed * time * sf::Vector2f(cos(m_angle * DEGTORAD) / lenght, sin(m_angle * DEGTORAD) / lenght);
 	}
 
 	if (m_dir && !m_move) {
-		m_angle += -0.005f * time * m_speedRotate;
+		m_angle += time * m_speedRotate;
 	}
 	if (!m_dir && !m_move) {
-		m_angle += 0.005f * time * m_speedRotate;
+		m_angle += -time * m_speedRotate;
 	}
 
 	m_sprite.setRotation(m_angle);
@@ -37,7 +38,7 @@ void Player::Update(float time)
 	m_move = false;
 }
 
-void Player::control(sf::RenderWindow& w)
+void Player::control()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
 		m_move = true;
