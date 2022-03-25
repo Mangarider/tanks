@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <iostream>
 #include "Config.h"
+#include "Bullet.h"
 
 Player::Player(std::string f, std::string n, sf::Vector2f c, float w, float h, int s, float sR) :
 	Entity(f, n, c, w, h, s, sR)
@@ -18,6 +19,12 @@ sf::Vector2f Player::getCoords()
 	return m_coords;
 }
 
+void Player::shoot()
+{
+	Bullet* B = new Bullet("", "bull", getCoords(), 100, m_angle);
+	bullets.push_back(B);
+}
+
 void Player::Update(float time)
 {
 	control();
@@ -32,7 +39,10 @@ void Player::Update(float time)
 	if (!m_dir && !m_move) {
 		m_angle += -time * m_speedRotate;
 	}
-
+	for (auto& b : bullets) {
+		b->Update(time);
+		if (b->timer <= 0) { delete b;  bullets.erase(bullets.begin()); }
+	}
 	m_sprite.setRotation(m_angle);
 	m_sprite.setPosition(m_coords);
 	m_move = false;
@@ -45,6 +55,7 @@ void Player::control()
 		if (m_changeDir == 1) {
 			m_dir = !m_dir;
 			m_changeDir = 0;
+			shoot();
 		}
 	}
 	else {
@@ -55,4 +66,7 @@ void Player::control()
 void Player::draw(sf::RenderWindow& w)
 {
 	w.draw(m_sprite);
+	for (auto& b : bullets) {
+		b->draw(w);
+	}
 }
